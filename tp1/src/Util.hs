@@ -2,8 +2,14 @@ module Util where
 
 -- | @alinearDerecha n s@ agrega espacios a la izquierda de @s@ hasta que su longitud sea @n@.
 -- Si @s@ ya tiene longitud @>= n@, devuelve @s@.
-alinearDerecha :: Int -> String -> String
-alinearDerecha n s = error "COMPLETAR EJERCICIO 1"
+-- alinearDerecha :: Int -> String -> String
+
+alinearDerecha n s = espacios ++ s
+     where
+        m = n-(length s)        -- calculamos cuantos caracteres nos hacen falta
+        t = [ x | x <- [1..m] ] -- generamos una lista por compresion de esos caracteres a foldear
+        f x res = " " ++ res    -- lambda para el fold, simplemente concatena los espacios
+        espacios = foldr f "" t -- generamos los espacios concatenando la lista por compresion
 
 -- | Dado un índice y una función, actualiza el elemento en la posición del índice
 -- aplicando la función al valor actual. Si el índice está fuera de los límites
