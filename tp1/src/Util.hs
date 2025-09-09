@@ -11,11 +11,6 @@ alinearDerecha n s = espacios ++ s
         f x res = " " ++ res    -- lambda para el fold, simplemente concatena los espacios
         espacios = foldr f "" t -- generamos los espacios concatenando la lista por compresion
 
-
-recr :: b -> (a -> [a] -> b -> b) -> [a] -> b
-recr z _ []     = z
-recr z f (x:xs) = f x xs (recr z f xs)
-
 -- | Dado un índice y una función, actualiza el elemento en la posición del índice
 -- aplicando la función al valor actual. Si el índice está fuera de los límites
 -- de la lista, devuelve la lista sin cambios.
