@@ -32,7 +32,9 @@ data Histograma = Histograma Float Float [Int]
 -- valores en el rango y 2 casilleros adicionales para los valores fuera del rango.
 -- Require que @l < u@ y @n >= 1@.
 vacio :: Int -> (Float, Float) -> Histograma
-vacio n (l, u) = error "COMPLETAR EJERCICIO 3"
+vacio n (l, u) = Histograma l tamanioIntervalo [0 | _ <-[1..n+2]] --Le damos a Histograma el valor incial L, el tamaño del intervalo que tienen los casilleros intermedios y una lista de 0 de largo n+2
+  where 
+    tamanioIntervalo = (u - l) / fromIntegral n --usamos fromIntegral para convertir n a un tipo Num y poder hacer la division
 
 -- | Agrega un valor al histograma.
 agregar :: Float -> Histograma -> Histograma
