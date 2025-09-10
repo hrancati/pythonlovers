@@ -22,11 +22,26 @@ data Expr
   | Div Expr Expr
   deriving (Show, Eq)
 
--- recrExpr :: ... anotar el tipo ...
-recrExpr = error "COMPLETAR EJERCICIO 7"
+recrExpr :: (Float->a) -> (Float->Float->a)-> (Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a) ->Expr->a
+recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of
+      Const a -> fConst a
+      Rango a b -> fRango a b
+      Suma x y-> fSuma x y (rec x) (rec y)
+      Resta x y -> fResta x y (rec x) (rec y)
+      Mult x y -> fMult x y (rec x) (rec y)
+      Div x y -> fDiv x y (rec x) (rec y)
+      where rec= recrExpr fConst fRango fSuma fResta fMult fDiv 
 
--- foldExpr :: ... anotar el tipo ...
-foldExpr = error "COMPLETAR EJERCICIO 7"
+
+foldExpr :: (Float->a) -> (Float->Float->a)-> (a->a->a)->(a->a->a)->(a->a->a)->(a->a->a) ->Expr->a
+foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of
+      Const a -> fConst a
+      Rango a b -> fRango a b
+      Suma x y-> fSuma (rec x) (rec y)
+      Resta x y -> fResta (rec x) (rec y)
+      Mult x y -> fMult (rec x) (rec y)
+      Div x y -> fDiv (rec x) (rec y)
+      where rec= foldExpr fConst fRango fSuma fResta fMult fDiv
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
