@@ -38,11 +38,24 @@ vacio n (l, u) = Histograma l tamanioIntervalo [0 | _ <-[1..n+2]] --Le damos a H
 
 -- | Agrega un valor al histograma.
 agregar :: Float -> Histograma -> Histograma
-agregar x _ = error "COMPLETAR EJERCICIO 4"
+agregar y (Histograma i t xs)= Histograma i t (actualizarElem k (+1) xs )
+  where 
+    k= auxiliar y i t (length xs)
+
+auxiliar:: Float ->Float -> Float-> Int-> Int
+auxiliar y i t n 
+              |n <=0  =0
+              |y <i = 0
+              |y >= i + t* fromIntegral (n-2) = n-1
+              | otherwise = 1+ floor ((y-i)/t) 
+
+
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
-histograma n r xs = error "COMPLETAR EJERCICIO 5"
+histograma n r xs= foldr agregar histogramaVacio xs 
+  where
+    histogramaVacio= vacio n r
 
 -- | Un `Casillero` representa un casillero del histograma con sus límites, cantidad y porcentaje.
 -- Invariante: Sea @Casillero m1 m2 c p@ entonces @m1 < m2@, @c >= 0@, @0 <= p <= 100@
@@ -67,4 +80,28 @@ casPorcentaje (Casillero _ _ _ p) = p
 
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
 casilleros :: Histograma -> [Casillero]
-casilleros _ = error "COMPLETAR EJERCICIO 6"
+casilleros h = calcularCasilleros (listaMinimo h) (listaMaximo h) ( listaCantidad h) (listaPorcentaje h)
+    
+
+calcularCasilleros :: [Float]->[Float]->[Int]->[Float]-> [Casillero]
+calcularCasilleros min max cant porcentaje =  zipWith4 Casillero min max cant porcentaje
+
+
+listaMinimo :: Histograma -> [Float]
+listaMinimo (Histograma i t xs) = [if j== 0 then infinitoNegativo else i + fromIntegral(j-1) * t| j<- [0 .. n - 1]]
+  where n =  length(xs)
+
+
+listaMaximo :: Histograma -> [Float]
+listaMaximo (Histograma i t xs) = [if j==n-1 then infinitoPositivo else i + fromIntegral(j) *t | j<- [0 .. n - 1]]
+  where n =  length(xs)
+
+
+listaCantidad :: Histograma -> [Int]
+listaCantidad (Histograma i t xs) = xs
+
+listaPorcentaje :: Histograma -> [Float]
+listaPorcentaje (Histograma i t xs) = if sumatoria == 0 then replicate n 0  else map (\c -> 100 * fromIntegral c / fromIntegral sumatoria) xs
+  where 
+  sumatoria= sum xs
+  n= length xs
