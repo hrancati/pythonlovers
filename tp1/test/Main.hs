@@ -82,8 +82,8 @@ testsVacio =
               Casillero 10 12 0 0,
               Casillero 12 14 0 0,
               Casillero 14 16 0 0,
-              Casillero 14 16 0 0,
-              Casillero 16 20 0 0,
+              Casillero 16 18 0 0,
+              Casillero 18 20 0 0,
               Casillero 20 infinitoPositivo 0 0
             ],
       casilleros (vacio 1 (0, 1)) --un test donde solo hay 3 casilleros
@@ -145,9 +145,9 @@ testsAgregar =
                 ],
           --Nuestros tests
           casilleros (agregar (-3) (agregar 10 h1)) --agregar 2 numeros en 2 casilleros 
-            ~?= [ Casillero infinitoNegativo 0 0 0, 
+            ~?= [ Casillero infinitoNegativo 0 1 50, -- El 50% de los valores están acá 
                   Casillero 0 2 0 0,
-                  Casillero 2 4 1 50, -- El 50% de los valores están acá
+                  Casillero 2 4 0 0, 
                   Casillero 4 6 0 0,
                   Casillero 6 8 0 0,
                   Casillero 8 10 1 50, -- El 50% de los valores están acá
