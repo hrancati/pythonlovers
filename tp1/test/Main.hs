@@ -144,7 +144,7 @@ testsAgregar =
                   Casillero 6 infinitoPositivo 0 0
                 ],
           --Nuestros tests
-          casilleros (agregar (-3) (agregar 10 h1)) --agregar 2 numeros en 2 casilleros 
+          casilleros (agregar (-3) (agregar 9 h1)) --agregar 2 numeros en 2 casilleros 
             ~?= [ Casillero infinitoNegativo 0 1 50, -- El 50% de los valores están acá 
                   Casillero 0 2 0 0,
                   Casillero 2 4 0 0, 
