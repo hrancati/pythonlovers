@@ -92,7 +92,7 @@ testsVacio =
               Casillero 1.0 infinitoPositivo 0 0.0
             ],
       casilleros (vacio 5 (-91, 12)) --Un test donde el limite inferior es negativo y el superior es positivo
-      ~?= [ Casillero + infinitoNegativo (-91.0) 0 0.0,
+      ~?= [ Casillero infinitoNegativo (-91.0) 0 0.0,
             Casillero (-91.0) (-70.4) 0 0.0,
             Casillero (-70.4) (-49.8) 0 0.0,
             Casillero (-49.8) (-29.199997) 0 0.0,
