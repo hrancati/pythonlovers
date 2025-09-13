@@ -8,6 +8,7 @@ import Generador
 import Histograma
 import Test.HUnit
 import Util
+import Util (infinitoNegativo, infinitoPositivo)
 
 main :: IO ()
 main = runTestTTAndExit allTests
@@ -41,7 +42,11 @@ testsAlinearDerecha =
   test
     [ alinearDerecha 6 "hola" ~?= "  hola",
       alinearDerecha 10 "incierticalc" ~?= "incierticalc",
-      completar
+      --Nuestros tests
+      alinearDerecha 4 "increiblementeLargo" ~?= "increiblementeLargo",
+      alinearDerecha (-4) "testNegativo" ~?= "testNegativo",
+      alinearDerecha (-3) "" ~?= "",
+      alinearDerecha 10 "" ~?= "          " --que pasa cuando no hay string
     ]
 
 testsActualizarElem :: Test
@@ -49,7 +54,11 @@ testsActualizarElem =
   test
     [ actualizarElem 0 (+ 10) [1, 2, 3] ~?= [11, 2, 3],
       actualizarElem 1 (+ 10) [1, 2, 3] ~?= [1, 12, 3],
-      completar
+      --nuestros tests
+      actualizarElem 6 (+ 30) [1, 2, 3, 4, 5] ~?= [1, 2, 3, 4, 5], --caso en el que el indice esta fuera del limite de la lista,
+      actualizarElem 7 (+ 800) [1, 2, 3, 4, 5, 6, 7, 8] ~?= [1, 2, 3, 4, 5, 6, 7, 808],
+      actualizarElem (-2) (+ 10) [1, 2, 3, 4, 5] ~?= [1, 2, 3, 4, 5], --caso en el que el indice negativo
+      actualizarElem 4 (+ infinitoPositivo) [11, -678, 544, 0, -1234, 3] ~?= [11, -678, 544, 0, infinitoPositivo, 3] --caso en el que sumamos infinitoPositivo a una posición
     ]
 
 testsVacio :: Test
@@ -67,12 +76,51 @@ testsVacio =
               Casillero 4 6 0 0,
               Casillero 6 infinitoPositivo 0 0
             ],
-      completar
+      --Nuestros tests
+      casilleros (vacio 5 (10, 20)) --test donde el intervalo no empieza en 0
+        ~?= [ Casillero infinitoNegativo 10 0 0,
+              Casillero 10 12 0 0,
+              Casillero 12 14 0 0,
+              Casillero 14 16 0 0,
+              Casillero 14 16 0 0,
+              Casillero 16 20 0 0,
+              Casillero 20 infinitoPositivo 0 0
+            ],
+      casilleros (vacio 1 (0, 1)) --un test donde solo hay 3 casilleros
+        ~?= [ Casillero infinitoNegativo 0.0 0 0.0,
+              Casillero 0.0 1.0 0 0.0,
+              Casillero 1.0 infinitoPositivo 0 0.0
+            ],
+      casilleros (vacio 5 (-91, 12)) --Un test donde el limite inferior es negativo y el superior es positivo
+      ~?= [ Casillero + infinitoNegativo (-91.0) 0 0.0,
+            Casillero (-91.0) (-70.4) 0 0.0,
+            Casillero (-70.4) (-49.8) 0 0.0,
+            Casillero (-49.8) (-29.199997) 0 0.0,
+            Casillero (-29.199997) (-8.599998) 0 0.0,
+            Casillero (-8.599998) 12.0 0 0.0,
+            Casillero 12.0 infinitoPositivo 0 0.0
+          ],
+      casilleros (vacio 10 (-1000, -100)) --Un test donde ambos límites son negativos
+      ~?= [ Casillero infinitoNegativo (-1000.0) 0 0.0,
+            Casillero (-1000.0) (-910.0) 0 0.0,
+            Casillero (-910.0) (-820.0) 0 0.0,
+            Casillero (-820.0) (-730.0) 0 0.0,
+            Casillero (-730.0) (-640.0) 0 0.0,
+            Casillero (-640.0) (-550.0) 0 0.0,
+            Casillero (-550.0) (-460.0) 0 0.0,
+            Casillero (-460.0) (-370.0) 0 0.0,
+            Casillero (-370.0) (-280.0) 0 0.0,
+            Casillero (-280.0) (-190.0) 0 0.0,
+            Casillero (-190.0) (-100.0) 0 0.0,
+            Casillero (-100.0) infinitoPositivo 0 0.0
+          ]
     ]
 
 testsAgregar :: Test
 testsAgregar =
   let h0 = vacio 3 (0, 6)
+      h1 = vacio 5 (0, 10) --agregado por nosotros
+      h2 = vacio 8 (2, 7) --agregado por nosotros
    in test
         [ casilleros (agregar 0 h0)
             ~?= [ Casillero infinitoNegativo 0 0 0,
@@ -95,7 +143,37 @@ testsAgregar =
                   Casillero 4 6 0 0,
                   Casillero 6 infinitoPositivo 0 0
                 ],
-          completar
+          --Nuestros tests
+          casilleros (agregar (-3) (agregar 10 h1)) --agregar 2 numeros en 2 casilleros 
+            ~?= [ Casillero infinitoNegativo 0 0 0, 
+                  Casillero 0 2 0 0,
+                  Casillero 2 4 1 50, -- El 50% de los valores están acá
+                  Casillero 4 6 0 0,
+                  Casillero 6 8 0 0,
+                  Casillero 8 10 1 50, -- El 50% de los valores están acá
+                  Casillero 10 infinitoPositivo 0 0 
+                ],
+          casilleros (agregar infinitoPositivo (agregar infinitoNegativo (agregar 300 (agregar 3 h1)))) --agregar 4 numeros en 3 casilleros
+            ~?= [ Casillero infinitoNegativo 0 1 25, -- El 25% de los valores están acá 
+                  Casillero 0 2 0 0,
+                  Casillero 2 4 1 25, -- El 25% de los valores están acá
+                  Casillero 4 6 0 0,
+                  Casillero 6 8 0 0,
+                  Casillero 8 10 0 0, 
+                  Casillero 10 infinitoPositivo 2 50 -- El 50% de los valores están acá 
+                ],
+          casilleros (agregar 2.3 (agregar 2.5 (agregar 6.5 h2))) --agregar 3 numeros en 2 casilleros
+            ~?= [ Casillero infinitoNegativo 2.0 0 0.0,
+                  Casillero 2.0 2.625 2 66.666664, --el 66% esta aca
+                  Casillero 2.625 3.25 0 0.0,
+                  Casillero 3.25 3.875 0 0.0,
+                  Casillero 3.875 4.5 0 0.0,
+                  Casillero 4.5 5.125 0 0.0,
+                  Casillero 5.125 5.75 0 0.0,
+                  Casillero 5.75 6.375 0 0.0,
+                  Casillero 6.375 7.0 1 33.333332, --el 33% esta aca
+                  Casillero 7.0 infinitoPositivo 0 0.0
+                ]
         ]
 
 testsHistograma :: Test
