@@ -180,7 +180,10 @@ testsHistograma :: Test
 testsHistograma =
   test
     [ histograma 4 (1, 5) [1, 2, 3] ~?= agregar 3 (agregar 2 (agregar 1 (vacio 4 (1, 5)))),
-      completar
+      --Nuestros tests
+      histograma 5 (0, 10) [21, 5, infinitoPositivo, infinitoNegativo, 9] ~?= agregar 9 (agregar infinitoNegativo (agregar infinitoPositivo (agregar 5 (agregar 21 (vacio 5 (0, 10)))))), --probamos que pasa si estan los numeros son infinitoPositivo o infinitoNegativo
+      histograma 8 (2, 7) [3.1416, 4, 2.34567, 81, 6.8173, 3.3333] ~?= agregar 3.3333 (agregar 6.8173 (agregar 81 (agregar 2.34567 (agregar 4 (agregar 3.1416 (vacio 8 (2, 7))))))), --probamos que pasa con numeros reales no enteros
+      histograma 6 (1, 10000) [] ~?= vacio 6 (1, 10000) --probamos que pasa si le damos una lista de numeros reales vacia
     ]
 
 testsCasilleros :: Test
@@ -200,7 +203,34 @@ testsCasilleros =
               Casillero 4.0 6.0 0 0.0,
               Casillero 6.0 infinitoPositivo 0 0.0
             ],
-      completar
+      --Nuestros test
+      casilleros (agregar infinitoPositivo (vacio 5 (0, 10))) --probamos agregando infinitoPositivo
+        ~?= [ Casillero infinitoNegativo 0 0 0, 
+              Casillero 0 2 0 0,
+              Casillero 2 4 0 0, 
+              Casillero 4 6 0 0,
+              Casillero 6 8 0 0,
+              Casillero 8 10 0 0,
+              Casillero 10 infinitoPositivo 1 100 
+            ],
+      casilleros (agregar 9898 (agregar 666 (agregar 30 (agregar 4 (vacio 2 (16, 1024))))))
+        ~?= [ Casillero infinitoNegativo 16 1 25, 
+              Casillero 16 520 1 25,
+              Casillero 520 1024 1 25,
+              Casillero 1024 infinitoPositivo 1 25 
+            ],
+      casilleros (agregar infinitoNegativo (agregar infinitoPositivo (agregar 2.9999 (agregar 3.299 (vacio 8 (2, 7)))))) --probamos casillero con numeros infinitos y reales no enteros
+        ~?= [ Casillero infinitoNegativo 2.0 1 025,
+              Casillero 2.0 2.625 0 0, 
+              Casillero 2.625 3.25 1 25,
+              Casillero 3.25 3.875 1 25,
+              Casillero 3.875 4.5 0 0.0,
+              Casillero 4.5 5.125 0 0.0,
+              Casillero 5.125 5.75 0 0.0,
+              Casillero 5.75 6.375 0 0.0,
+              Casillero 6.375 7.0 0 0, 
+              Casillero 7.0 infinitoPositivo 1 25
+            ]
     ]
 
 testsRecr :: Test
