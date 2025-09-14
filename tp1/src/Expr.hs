@@ -45,7 +45,13 @@ foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
-eval = error "COMPLETAR EJERCICIO 8"
+eval expr gen = foldExpr fCons fRango fSuma fResta fMult fDiv expr
+  where fCons x     = (x, gen)
+        fRango x y  = dameUno (x, y) gen
+        fSuma x y   = (fst x + fst y, gen)
+        fResta x y  = (fst x - fst y, gen)
+        fMult x y   = (fst x * fst y, gen)
+        fDiv x y    = (fst x / fst y, gen)
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
