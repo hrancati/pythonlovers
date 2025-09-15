@@ -86,12 +86,12 @@ casilleros h = zipWith4 Casillero (listaMinimo h) (listaMaximo h) ( listaCantida
 
 listaMinimo :: Histograma -> [Float]      -- devuelve una lista de el inicio de los intervalos
 listaMinimo (Histograma i t xs) = [if j== 0 then infinitoNegativo else i + fromIntegral(j-1) * t| j<- [0 .. n - 1]]
-  where n =  length(xs)
+  where n =  length xs
 
 
 listaMaximo :: Histograma -> [Float]      -- devuelve una lista el final de los intervalos
 listaMaximo (Histograma i t xs) = [if j==n-1 then infinitoPositivo else i + fromIntegral(j) *t | j<- [0 .. n - 1]]
-  where n =  length(xs)
+  where n =  length xs
 
 
 listaCantidad :: Histograma -> [Int]    -- devuelve una lista de la cantidad de elementos en cada intervalo
