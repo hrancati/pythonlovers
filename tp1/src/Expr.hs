@@ -74,7 +74,29 @@ evalHistograma m n expr = error "COMPLETAR EJERCICIO 10"
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar = error "COMPLETAR EJERCICIO 11"
+mostrar t = recrExpr fCons fRango fSuma fResta fMult fDiv t 
+      where fCons x= show x
+            fRango x y =   show x ++"~"++ show y
+            fSuma x y fx fy=  maybeParen  (perentesisSuma(x)) fx ++ " + " ++ maybeParen  ( perentesisSuma(y)) fy
+            fResta x y fx fy = maybeParen (noEsConst(x)) fx ++ " - "  ++ maybeParen (noEsConst(y)) fy
+            fMult x y fx fy= maybeParen (parentesisMult(x)) fx ++ " * " ++ maybeParen ( parentesisMult(y)) fy
+            fDiv x y fx fy = maybeParen (noEsConst(x)) fx ++ " / " ++ maybeParen (noEsConst(y)) fy
+
+perentesisSuma:: Expr->Bool
+perentesisSuma (Suma _ _)=False
+perentesisSuma (Const _)= False
+perentesisSuma (Rango _ _)= False
+perentesisSuma _ =True
+
+parentesisMult:: Expr-> Bool
+parentesisMult (Mult _ _)= False
+parentesisMult (Const _)= False
+parentesisMult (Rango _ _)= False
+parentesisMult _ =True
+
+noEsConst:: Expr -> Bool
+noEsConst (Const _)= False
+noEsConst _ = True
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
