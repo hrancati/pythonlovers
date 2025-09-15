@@ -287,8 +287,17 @@ testsEvalHistograma =
           Casillero 5.2 5.6 0 0.0,
           Casillero 5.6 6.0 0 0.0,
           Casillero 6.0 infinitoPositivo 0 0.0
+        ],
+        casilleros (fst (evalHistograma 5 10 (Rango 1 10) genFijo))  ~?=
+        [
+            Casillero infinitoNegativo 4.5 0 0.0,
+            Casillero 4.5 4.9 0 0.0,
+            Casillero 4.9 5.3 0 0.0,
+            Casillero 5.3 5.7 10 100.0,
+            Casillero 5.7 6.1 0 0.0,
+            Casillero 6.1 6.5 0 0.0,
+            Casillero 6.5 infinitoPositivo 0 0.0
         ]
-
     ]
 
 testsParse :: Test
