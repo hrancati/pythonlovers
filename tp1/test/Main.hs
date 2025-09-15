@@ -320,7 +320,25 @@ testsMostrar =
       mostrar (Suma (Mult (Suma (Const 1) (Const 2)) (Const 3)) (Const 4))
         ~?= "((1.0 + 2.0) * 3.0) + 4.0",
       mostrar (Mult (Suma (Suma (Const 1) (Const 2)) (Const 3)) (Const 4))
-        ~?= "(1.0 + 2.0 + 3.0) * 4.0"
+        ~?= "(1.0 + 2.0 + 3.0) * 4.0",
+        mostrar (Const 1)
+        ~?= "1.0",
+        mostrar(Rango 6 13)
+        ~?= "6.0~13.0",
+        mostrar (Mult (Suma (Const 1.0) (Const 2.0)) (Const 4.0))
+        ~?= "(1.0 + 2.0) * 4.0",
+        mostrar (Mult (Const 2.0) (Suma (Const 1.0) (Const 2.0)))
+        ~?= "2.0 * (1.0 + 2.0)",
+        mostrar (Suma (Suma (Suma (Const infinitoPositivo) (Const 2)) (Const 3)) (Const 4))
+        ~?= "Infinity + 2.0 + 3.0 + 4.0",
+        mostrar (Div (Suma (Const 1.9) (Const 8.3)) (Mult (Const 3.7) (Const 812.93)))
+        ~?= "(1.9 + 8.3) / (3.7 * 812.93)",
+        mostrar (Mult ( Div(Const infinitoPositivo )(Const infinitoNegativo)) ( Resta (Const infinitoNegativo) (Const infinitoNegativo)))
+        ~?= "(Infinity / -Infinity) * (-Infinity - -Infinity)",
+        mostrar (Suma (Mult (Suma (Const 3) (Div (Const 0) (Const 0))) (Rango infinitoNegativo infinitoPositivo)) (Resta (Div(Const 23) (Const 0)) (Const 87)))
+        ~?= "((3.0 + (0.0 / 0.0)) * -Infinity~Infinity) + ((23.0 / 0.0) - 87.0)",
+        mostrar (Suma (Mult (Const 6) (Suma (Const 32) (Const 6666))) (Div (Const 26) (Rango 61 94)))
+        ~?= "(6.0 * (32.0 + 6666.0)) + (26.0 / (61.0~94.0))"
     ]
 
 testsMostrarFloat :: Test
