@@ -22,8 +22,8 @@ data Expr
   | Div Expr Expr
   deriving (Show, Eq)
 
-recrExpr :: (Float->a) -> (Float->Float->a)-> (Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a) ->Expr->a
-recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of
+recrExpr :: (Float->a) -> (Float->Float->a)-> (Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a) ->Expr->a    -- funciona igual que un recr pero con constructores 
+recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of                                                                                            -- me fjo en que constructor utiliza y le aplico la funcion
       Const a -> fConst a
       Rango a b -> fRango a b
       Suma x y-> fSuma x y (rec x) (rec y)
@@ -33,8 +33,8 @@ recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of
       where rec= recrExpr fConst fRango fSuma fResta fMult fDiv 
 
 
-foldExpr :: (Float->a) -> (Float->Float->a)-> (a->a->a)->(a->a->a)->(a->a->a)->(a->a->a) ->Expr->a
-foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of
+foldExpr :: (Float->a) -> (Float->Float->a)-> (a->a->a)->(a->a->a)->(a->a->a)->(a->a->a) ->Expr->a    -- funciona igual que un recr pero con constructores 
+foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of                                          -- me fjo en que constructor utiliza y le aplico la funcion
       Const a -> fConst a
       Rango a b -> fRango a b
       Suma x y-> fSuma (rec x) (rec y)
