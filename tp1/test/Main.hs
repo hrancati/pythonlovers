@@ -349,7 +349,16 @@ testsArmarHistograma =
         Casillero 174.70993 356.87216 10 50.0,
         Casillero 356.87216 539.0344 6 30.0,
         Casillero 539.0344 infinitoPositivo 0 0.0
-      ]
+      ],
+    casilleros (fst (armarHistograma 4 5000 (eval (Resta (Div (Suma (Mult (Rango 10 20) (Rango 2 3)) (Rango 100 200)) (Rango 5 10)) (Const 2))) (genNormalConSemilla 55)))  ~?=
+      [
+        Casillero infinitoNegativo 11.721495 21 0.42,
+        Casillero 11.721495 17.766083 706 14.12,
+        Casillero 17.766083 23.810673 2026 40.52,
+        Casillero 23.810673 29.85526 1528 30.56,
+        Casillero 29.85526 35.89985 526 10.52,
+        Casillero 35.89985 infinitoPositivo 193 3.86
+      ] --la operacion hecha: (((10 ~ 20) * (2 ~ 3)) + (100 ~ 200)) / (5 ~ 10) - 2 
     ]
 
 testsEvalHistograma :: Test
