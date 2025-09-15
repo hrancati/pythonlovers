@@ -57,7 +57,10 @@ eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f g = error "COMPLETAR EJERCICIO 9"
+armarHistograma m n f g = (histograma m r xs, gen)
+  where 
+    (xs, gen) = muestra f n g
+    r = rango95 xs
 
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
