@@ -47,12 +47,24 @@ foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of
 eval :: Expr -> G Float
 eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
   where 
-    fCons x      = \g -> (x, g)
-    fRango x y   = \g -> dameUno (x, y) g
-    fSuma f1 f2  = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 + x2, g3)) (f2 g2)) (f1 g1)
-    fResta f1 f2 = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 - x2, g3)) (f2 g2)) (f1 g1)
-    fMult f1 f2  = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 * x2, g3)) (f2 g2)) (f1 g1)
-    fDiv f1 f2   = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 / x2, g3)) (f2 g2)) (f1 g1)
+    fCons x g = (x, g)
+    fRango x y g = dameUno (x, y) g
+    fSuma f1 f2 g1 = (sumando1 + sumando2, g3)
+      where
+        (sumando1, g2) = f1 g1
+        (sumando2, g3) = f2 g2
+    fResta f1 f2 g1 = (minuendo - sustraendo, g3)
+      where
+        (minuendo, g2) = f1 g1
+        (sustraendo, g3) = f2 g2
+    fMult f1 f2 g1 = (factor1 * factor2, g3)
+      where
+        (factor1, g2) = f1 g1
+        (factor2, g3) = f2 g2
+    fDiv f1 f2 g1 = (factor1 / factor2, g3)
+      where
+        (dividendo, g2) = f1 g1
+        (divisior, g3) = f2 g2
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
