@@ -20,21 +20,21 @@ completar = TestCase (assertFailure "COMPLETAR")
 allTests :: Test
 allTests =
   test
-    [ -- "Ej 1 - Util.alinearDerecha" ~: testsAlinearDerecha,
-      -- "Ej 2 - Util.actualizarElem" ~: testsActualizarElem,
-      -- "Ej 3 - Histograma.vacio" ~: testsVacio,
-      -- "Ej 4 - Histograma.agregar" ~: testsAgregar,
-      -- "Ej 5 - Histograma.histograma" ~: testsHistograma,
-      -- "Ej 6 - Histograma.casilleros" ~: testsCasilleros,
-      -- "Ej 7 - Expr.recrExpr" ~: testsRecr,
+    [ "Ej 1 - Util.alinearDerecha" ~: testsAlinearDerecha,
+      "Ej 2 - Util.actualizarElem" ~: testsActualizarElem,
+      "Ej 3 - Histograma.vacio" ~: testsVacio,
+      "Ej 4 - Histograma.agregar" ~: testsAgregar,
+      "Ej 5 - Histograma.histograma" ~: testsHistograma,
+      "Ej 6 - Histograma.casilleros" ~: testsCasilleros,
+      "Ej 7 - Expr.recrExpr" ~: testsRecr,
       "Ej 7 - Expr.foldExpr" ~: testsFold,
-      "Ej 8 - Expr.eval" ~: testsEval
-      -- "Ej 9 - Expr.armarHistograma" ~: testsArmarHistograma,
-      -- "Ej 10 - Expr.evalHistograma" ~: testsEvalHistograma,
-      -- "Ej 11 - Expr.mostrar" ~: testsMostrar,
-      -- "Expr.Parser.parse" ~: testsParse,
-      -- "App.mostrarFloat" ~: testsMostrarFloat,
-      -- "App.mostrarHistograma" ~: testsMostrarHistograma
+      "Ej 8 - Expr.eval" ~: testsEval,
+      "Ej 9 - Expr.armarHistograma" ~: testsArmarHistograma,
+      "Ej 10 - Expr.evalHistograma" ~: testsEvalHistograma,
+      "Ej 11 - Expr.mostrar" ~: testsMostrar,
+      "Expr.Parser.parse" ~: testsParse,
+      "App.mostrarFloat" ~: testsMostrarFloat,
+      "App.mostrarHistograma" ~: testsMostrarHistograma
     ]
 
 testsAlinearDerecha :: Test
@@ -295,7 +295,46 @@ testsEval =
 testsArmarHistograma :: Test
 testsArmarHistograma =
   test
-    [completar]
+    [
+    casilleros (fst (armarHistograma 5 100 (eval (Suma (Rango 1 5) (Const 10))) (genNormalConSemilla 42))) ~?= 
+      [
+        Casillero infinitoNegativo 10.767537 4 4.0,
+        Casillero 10.767537 11.618409 8 8.0,
+        Casillero 11.618409 12.469282 20 20.0,
+        Casillero 12.469282 13.320154 36 36.0,
+        Casillero 13.320154 14.171026 20 20.0,
+        Casillero 14.171026 15.021899 11 11.0,
+        Casillero 15.021899 infinitoPositivo 1 1.0
+      ],
+    casilleros (fst (armarHistograma 4 20000 (eval (Resta (Rango 1 600) (Const 25))) (genNormalConSemilla 14)))  ~?=
+      [
+        Casillero infinitoNegativo (-29.510986) 509 2.545,
+        Casillero (-29.510986) 121.728485 2761 13.805,
+        Casillero 121.728485 272.96796 6769 33.845,
+        Casillero 272.96796 424.20743 6676 33.38,
+        Casillero 424.20743 575.4469 2771 13.855,
+        Casillero 575.4469 infinitoPositivo 514 2.57
+      ],
+    casilleros (fst (armarHistograma 6 20000 (eval (Mult (Rango (-25) (-10)) (Const 4))) (genNormalConSemilla 33)))  ~?=
+      [
+        Casillero infinitoNegativo (-99.798134) 499 2.495,
+        Casillero (-99.798134) (-89.80865) 1405 7.025,
+        Casillero (-89.80865) (-79.81917) 3220 16.1,
+        Casillero (-79.81917) (-69.82968) 4895 24.475,
+        Casillero (-69.82968) (-59.8402) 4835 24.175,
+        Casillero (-59.8402) (-49.850716) 3208 16.04,
+        Casillero (-49.850716) (-39.86123) 1424 7.12,
+        Casillero (-39.86123) infinitoPositivo 514 2.57
+      ],
+    casilleros (fst (armarHistograma 3 20 (eval (Div (Rango 8 1000) (Const 2))) (genNormalConSemilla 1)))  ~?=
+      [
+        Casillero infinitoNegativo (-7.452301) 0 0.0,
+        Casillero (-7.452301) 174.70993 4 20.0,
+        Casillero 174.70993 356.87216 10 50.0,
+        Casillero 356.87216 539.0344 6 30.0,
+        Casillero 539.0344 infinitoPositivo 0 0.0
+      ]
+    ]
 
 testsEvalHistograma :: Test
 testsEvalHistograma =
