@@ -24,6 +24,7 @@ module Histograma
 where
 
 import Util
+import Data.List (zipWith4) --lo agregamos para poder utilizar zipWith4 en ejercicio 6 para definir la función casilleros
 
 data Histograma = Histograma Float Float [Int]
   deriving (Show, Eq)
