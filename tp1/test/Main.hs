@@ -43,10 +43,10 @@ testsAlinearDerecha =
     [ alinearDerecha 6 "hola" ~?= "  hola",
       alinearDerecha 10 "incierticalc" ~?= "incierticalc",
       --Nuestros tests
-      alinearDerecha 4 "increiblementeLargo" ~?= "increiblementeLargo",
-      alinearDerecha (-4) "testNegativo" ~?= "testNegativo",
-      alinearDerecha (-3) "" ~?= "",
-      alinearDerecha 10 "" ~?= "          " --que pasa cuando no hay string
+      alinearDerecha 4 "increiblementeLargo" ~?= "increiblementeLargo", --no hay cambios en el string porque tiene más caracteres que 4
+      alinearDerecha (-4) "testNegativo" ~?= "testNegativo", --probamos que no podemos alinear con un numero negativo a la derecha
+      alinearDerecha (-3) "" ~?= "", --no hay cambios en el string vacio 
+      alinearDerecha 10 "" ~?= "          " --probamos que funciona cuando no hay string
     ]
 
 testsActualizarElem :: Test
@@ -213,7 +213,7 @@ testsCasilleros =
               Casillero 8 10 0 0,
               Casillero 10 infinitoPositivo 1 100 
             ],
-      casilleros (agregar 9898 (agregar 666 (agregar 30 (agregar 4 (vacio 2 (16, 1024))))))
+      casilleros (agregar 9898 (agregar 666 (agregar 30 (agregar 4 (vacio 2 (16, 1024)))))) --probamos agregando un numero en cada casillero para que haya 25% de probabilidad en cada uno
         ~?= [ Casillero infinitoNegativo 16 1 25, 
               Casillero 16 520 1 25,
               Casillero 520 1024 1 25,
@@ -312,6 +312,7 @@ testsArmarHistograma :: Test
 testsArmarHistograma =
   test
     [
+    --nuestros tests
     casilleros (fst (armarHistograma 5 100 (eval (Suma (Rango 1 5) (Const 10))) (genNormalConSemilla 42))) ~?= 
       [
         Casillero infinitoNegativo 10.767537 4 4.0,
