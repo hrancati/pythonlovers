@@ -24,6 +24,7 @@ module Histograma
 where
 
 import Util
+import Data.List (zipWith4)
 
 data Histograma = Histograma Float Float [Int]
   deriving (Show, Eq)
