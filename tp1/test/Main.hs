@@ -272,8 +272,24 @@ testsFold =
       foldExpr Const Rango Suma Resta Mult Div (Suma (Const 5) (Const 5)) ~?= (Suma (Const 5) (Const 5)),
       foldExpr Const Rango Suma Resta Mult Div (Resta (Const 5) (Const 5)) ~?= (Resta (Const 5) (Const 5)),
       foldExpr Const Rango Suma Resta Mult Div (Mult (Const 4) (Const 3)) ~?= (Mult (Const 4) (Const 3)),
-      foldExpr Const Rango Suma Resta Mult Div (Div (Const 10) (Const 2)) ~?= (Div (Const 10) (Const 2))
+      foldExpr Const Rango Suma Resta Mult Div (Div (Const 10) (Const 2)) ~?= (Div (Const 10) (Const 2)),
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) (Const 2) ~?= 2,
+      foldExpr (\x -> x) (\x y -> (x+y)/2) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) (Rango 0 7) ~?= 3.5,
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) 
+      (Suma (Const 2) (Resta (Const 6) (Const 3))) ~?= 5,
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) 
+      (Mult (Const 2) (Const 3)) ~?= 6,
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) 
+      (Div (Const 3) (Const 2)) ~?= 1.5
     ]
+
+-- Funciones lambdas utilizadas:
+-- fConst x         = x
+-- fRango x y       = devuelve el segundo argumento "y"
+-- fSuma e1 e2 x y  = devuelve "x+y"
+-- fResta e1 e2 x y = devuelve "x-y"
+-- fMult e1 e2 x y  = devuelve "x*y"
+-- fDiv e1 e2 x y   = devuelve "x/y"
 
 testsEval :: Test
 testsEval =
