@@ -64,7 +64,7 @@ eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
     fDiv f1 f2 g1 = (dividendo / divisor, g3)
       where
         (dividendo, g2) = f1 g1
-        (divisior, g3) = f2 g2
+        (divisor, g3) = f2 g2
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
