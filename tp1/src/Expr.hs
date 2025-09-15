@@ -61,7 +61,7 @@ eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
       where
         (factor1, g2) = f1 g1
         (factor2, g3) = f2 g2
-    fDiv f1 f2 g1 = (factor1 / factor2, g3)
+    fDiv f1 f2 g1 = (dividendo / divisor, g3)
       where
         (dividendo, g2) = f1 g1
         (divisior, g3) = f2 g2
