@@ -90,27 +90,27 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar t = recrExpr fCons fRango fSuma fResta fMult fDiv t 
-      where fCons x= show x
-            fRango x y =   show x ++"~"++ show y
-            fSuma x y fx fy=  maybeParen  (perentesisSuma(x)) fx ++ " + " ++ maybeParen  ( perentesisSuma(y)) fy
-            fResta x y fx fy = maybeParen (noEsConst(x)) fx ++ " - "  ++ maybeParen (noEsConst(y)) fy
-            fMult x y fx fy= maybeParen (parentesisMult(x)) fx ++ " * " ++ maybeParen ( parentesisMult(y)) fy
-            fDiv x y fx fy = maybeParen (noEsConst(x)) fx ++ " / " ++ maybeParen (noEsConst(y)) fy
+mostrar t = recrExpr fCons fRango fSuma fResta fMult fDiv t -- utiliza recrExpr para recorrer la Expr 
+      where fCons x= show x     -- devuelve el valor de x en un string
+            fRango x y =   show x ++"~"++ show y        -- devuelve el rango  
+            fSuma x y fx fy=  maybeParen  (parentesisSuma(x)) fx ++ " + " ++ maybeParen  ( parentesisSuma(y)) fy --si parentesisSuma==True, entonces lleva parentesis la Expr
+            fResta x y fx fy = maybeParen (noEsConst(x)) fx ++ " - "  ++ maybeParen (noEsConst(y)) fy   --lleva parentesis la Expr excepto en el caso de que sea una Const
+            fMult x y fx fy= maybeParen (parentesisMult(x)) fx ++ " * " ++ maybeParen ( parentesisMult(y)) fy   --parentesisMult==True, entonces lleva parentesis la Expr
+            fDiv x y fx fy = maybeParen (noEsConst(x)) fx ++ " / " ++ maybeParen (noEsConst(y)) fy      --lleva parentesis la Expr excepto en el caso de que sea una Const
 
-perentesisSuma:: Expr->Bool
-perentesisSuma (Suma _ _)=False
-perentesisSuma (Const _)= False
-perentesisSuma (Rango _ _)= False
-perentesisSuma _ =True
+parentesisSuma:: Expr->Bool   -- se fija para que casos debe llevar parentesis en el caso de una Suma
+parentesisSuma (Suma _ _)=False
+parentesisSuma (Const _)= False
+parentesisSuma (Rango _ _)= False
+parentesisSuma _ =True
 
-parentesisMult:: Expr-> Bool
+parentesisMult:: Expr-> Bool    -- se fija para que casos debe llevar parentesis en el caso de la Mult
 parentesisMult (Mult _ _)= False
 parentesisMult (Const _)= False
 parentesisMult (Rango _ _)= False
 parentesisMult _ =True
 
-noEsConst:: Expr -> Bool
+noEsConst:: Expr -> Bool    -- se fija si es Const o no 
 noEsConst (Const _)= False
 noEsConst _ = True
 
