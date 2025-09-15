@@ -236,9 +236,32 @@ testsCasilleros =
 testsRecr :: Test
 testsRecr =
   test
-    [  
-      True ~?= True
-    ]
+    [ recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) 
+      (\e1 e2 x y -> if e2 == Const 0 then x else x-y) (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Const 8) ~?= 8.0,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) 
+      (\e1 e2 x y -> if e2 == Const 0 then x else x-y) (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Rango 2 7) ~?= 4.5,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) (\e1 e2 x y -> x-y) 
+      (\e1 e2 x y -> x*y) (\e1 e2 x y -> x/y) (Suma (Const 2) (Resta (Const 6) (Const 3))) ~?= 5,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) (\e1 e2 x y -> x-y) 
+      (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Mult (Const 2) (Const 3)) ~?= 6,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) 
+      (\e1 e2 x y -> if e2 == Const 0 then x else x-y) (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Div (Const 0) (Const 2)) ~?= 0
+        ]
+
+-- Funciones lambdas utilizadas:
+-- fConst x         = x
+-- fRango x y       = y
+-- fSuma e1 e2 x y  = ve si el primer argumento Expr es Const 0, y si lo es devuelve el segundo argumento recursivo "y"
+--                    sino devuelve "x+y"
+-- fResta e1 e2 x y = ve si el segundo argumento Expr es Const 0, y si lo es devuelve el primer argumento recursivo "x"
+--                    sino devuelve "x-y"
+-- fMult e1 e2 x y  = ve si el primer o segundo argumento Expr es Const 0, y si lo es devuelve 0 sino devuelve "x*y"
+-- fDiv e1 e2 x y   = ve si el segundo argumento Expr es Const 1, y si lo es devuelve el primer argumento recursivo "x"
+--                    sino devuelve "x/y"
 
 testsFold :: Test
 testsFold =
