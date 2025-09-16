@@ -4,6 +4,7 @@ module Util where
 -- Si @s@ ya tiene longitud @>= n@, devuelve @s@.
 -- alinearDerecha :: Int -> String -> String
 
+alinearDerecha :: Int -> String -> String
 alinearDerecha n s = espacios ++ s
      where
         m = n-(length s)        -- calculamos cuantos caracteres nos hacen falta

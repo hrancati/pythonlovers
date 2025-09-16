@@ -20,21 +20,21 @@ completar = TestCase (assertFailure "COMPLETAR")
 allTests :: Test
 allTests =
   test
-    [ -- "Ej 1 - Util.alinearDerecha" ~: testsAlinearDerecha,
-      -- "Ej 2 - Util.actualizarElem" ~: testsActualizarElem,
-      -- "Ej 3 - Histograma.vacio" ~: testsVacio,
-      -- "Ej 4 - Histograma.agregar" ~: testsAgregar,
-      -- "Ej 5 - Histograma.histograma" ~: testsHistograma,
-      -- "Ej 6 - Histograma.casilleros" ~: testsCasilleros,
-      -- "Ej 7 - Expr.recrExpr" ~: testsRecr,
-      -- "Ej 7 - Expr.foldExpr" ~: testsFold,
-      -- "Ej 8 - Expr.eval" ~: testsEval
-      -- "Ej 9 - Expr.armarHistograma" ~: testsArmarHistograma,
-      "Ej 10 - Expr.evalHistograma" ~: testsEvalHistograma
-      -- "Ej 11 - Expr.mostrar" ~: testsMostrar,
-      -- "Expr.Parser.parse" ~: testsParse,
-      -- "App.mostrarFloat" ~: testsMostrarFloat,
-      -- "App.mostrarHistograma" ~: testsMostrarHistograma
+    [ "Ej 1 - Util.alinearDerecha" ~: testsAlinearDerecha,
+      "Ej 2 - Util.actualizarElem" ~: testsActualizarElem,
+      "Ej 3 - Histograma.vacio" ~: testsVacio,
+      "Ej 4 - Histograma.agregar" ~: testsAgregar,
+      "Ej 5 - Histograma.histograma" ~: testsHistograma,
+      "Ej 6 - Histograma.casilleros" ~: testsCasilleros,
+      "Ej 7 - Expr.recrExpr" ~: testsRecr,
+      "Ej 7 - Expr.foldExpr" ~: testsFold,
+      "Ej 8 - Expr.eval" ~: testsEval,
+      "Ej 9 - Expr.armarHistograma" ~: testsArmarHistograma,
+      "Ej 10 - Expr.evalHistograma" ~: testsEvalHistograma,
+      "Ej 11 - Expr.mostrar" ~: testsMostrar,
+      "Expr.Parser.parse" ~: testsParse,
+      "App.mostrarFloat" ~: testsMostrarFloat,
+      "App.mostrarHistograma" ~: testsMostrarHistograma
     ]
 
 testsAlinearDerecha :: Test
@@ -43,10 +43,10 @@ testsAlinearDerecha =
     [ alinearDerecha 6 "hola" ~?= "  hola",
       alinearDerecha 10 "incierticalc" ~?= "incierticalc",
       --Nuestros tests
-      alinearDerecha 4 "increiblementeLargo" ~?= "increiblementeLargo",
-      alinearDerecha (-4) "testNegativo" ~?= "testNegativo",
-      alinearDerecha (-3) "" ~?= "",
-      alinearDerecha 10 "" ~?= "          " --que pasa cuando no hay string
+      alinearDerecha 4 "increiblementeLargo" ~?= "increiblementeLargo", --no hay cambios en el string porque tiene más caracteres que 4
+      alinearDerecha (-4) "testNegativo" ~?= "testNegativo", --probamos que no podemos alinear con un numero negativo a la derecha
+      alinearDerecha (-3) "" ~?= "", --no hay cambios en el string vacio 
+      alinearDerecha 10 "" ~?= "          " --probamos que funciona cuando no hay string
     ]
 
 testsActualizarElem :: Test
@@ -213,7 +213,7 @@ testsCasilleros =
               Casillero 8 10 0 0,
               Casillero 10 infinitoPositivo 1 100 
             ],
-      casilleros (agregar 9898 (agregar 666 (agregar 30 (agregar 4 (vacio 2 (16, 1024))))))
+      casilleros (agregar 9898 (agregar 666 (agregar 30 (agregar 4 (vacio 2 (16, 1024)))))) --probamos agregando un numero en cada casillero para que haya 25% de probabilidad en cada uno
         ~?= [ Casillero infinitoNegativo 16 1 25, 
               Casillero 16 520 1 25,
               Casillero 520 1024 1 25,
@@ -236,9 +236,32 @@ testsCasilleros =
 testsRecr :: Test
 testsRecr =
   test
-    [  
-      True ~?= True
-    ]
+    [ recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) 
+      (\e1 e2 x y -> if e2 == Const 0 then x else x-y) (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Const 8) ~?= 8.0,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) 
+      (\e1 e2 x y -> if e2 == Const 0 then x else x-y) (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Rango 2 7) ~?= 4.5,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) (\e1 e2 x y -> x-y) 
+      (\e1 e2 x y -> x*y) (\e1 e2 x y -> x/y) (Suma (Const 2) (Resta (Const 6) (Const 3))) ~?= 5,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) (\e1 e2 x y -> x-y) 
+      (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Mult (Const 2) (Const 3)) ~?= 6,
+      recrExpr (\x -> x) (\x y -> (x+y)/2) (\e1 e2 x y -> if e1 == Const 0 then y else x+y) 
+      (\e1 e2 x y -> if e2 == Const 0 then x else x-y) (\e1 e2 x y -> if e1 == Const 0 || e2 == Const 0 then 0 else x*y) 
+      (\e1 e2 x y -> if e2 == Const 1 then x else x/y) (Div (Const 0) (Const 2)) ~?= 0
+        ]
+
+-- Funciones lambdas utilizadas:
+-- fConst x         = x
+-- fRango x y       = y
+-- fSuma e1 e2 x y  = ve si el primer argumento Expr es Const 0, y si lo es devuelve el segundo argumento recursivo "y"
+--                    sino devuelve "x+y"
+-- fResta e1 e2 x y = ve si el segundo argumento Expr es Const 0, y si lo es devuelve el primer argumento recursivo "x"
+--                    sino devuelve "x-y"
+-- fMult e1 e2 x y  = ve si el primer o segundo argumento Expr es Const 0, y si lo es devuelve 0 sino devuelve "x*y"
+-- fDiv e1 e2 x y   = ve si el segundo argumento Expr es Const 1, y si lo es devuelve el primer argumento recursivo "x"
+--                    sino devuelve "x/y"
 
 testsFold :: Test
 testsFold =
@@ -249,8 +272,24 @@ testsFold =
       foldExpr Const Rango Suma Resta Mult Div (Suma (Const 5) (Const 5)) ~?= (Suma (Const 5) (Const 5)),
       foldExpr Const Rango Suma Resta Mult Div (Resta (Const 5) (Const 5)) ~?= (Resta (Const 5) (Const 5)),
       foldExpr Const Rango Suma Resta Mult Div (Mult (Const 4) (Const 3)) ~?= (Mult (Const 4) (Const 3)),
-      foldExpr Const Rango Suma Resta Mult Div (Div (Const 10) (Const 2)) ~?= (Div (Const 10) (Const 2))
+      foldExpr Const Rango Suma Resta Mult Div (Div (Const 10) (Const 2)) ~?= (Div (Const 10) (Const 2)),
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) (Const 2) ~?= 2,
+      foldExpr (\x -> x) (\x y -> (x+y)/2) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) (Rango 0 7) ~?= 3.5,
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) 
+      (Suma (Const 2) (Resta (Const 6) (Const 3))) ~?= 5,
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) 
+      (Mult (Const 2) (Const 3)) ~?= 6,
+      foldExpr (\x -> x) (\x y -> x) (\x y -> x+y) (\x y -> x-y) (\x y -> x*y) (\x y -> x/y) 
+      (Div (Const 3) (Const 2)) ~?= 1.5
     ]
+
+-- Funciones lambdas utilizadas:
+-- fConst x         = x
+-- fRango x y       = devuelve el segundo argumento "y"
+-- fSuma e1 e2 x y  = devuelve "x+y"
+-- fResta e1 e2 x y = devuelve "x-y"
+-- fMult e1 e2 x y  = devuelve "x*y"
+-- fDiv e1 e2 x y   = devuelve "x/y"
 
 testsEval :: Test
 testsEval =
@@ -272,7 +311,56 @@ testsEval =
 testsArmarHistograma :: Test
 testsArmarHistograma =
   test
-    [completar]
+    [
+    --nuestros tests
+    casilleros (fst (armarHistograma 5 100 (eval (Suma (Rango 1 5) (Const 10))) (genNormalConSemilla 42))) ~?= 
+      [
+        Casillero infinitoNegativo 10.767537 4 4.0,
+        Casillero 10.767537 11.618409 8 8.0,
+        Casillero 11.618409 12.469282 20 20.0,
+        Casillero 12.469282 13.320154 36 36.0,
+        Casillero 13.320154 14.171026 20 20.0,
+        Casillero 14.171026 15.021899 11 11.0,
+        Casillero 15.021899 infinitoPositivo 1 1.0
+      ],
+    casilleros (fst (armarHistograma 4 20000 (eval (Resta (Rango 1 600) (Const 25))) (genNormalConSemilla 14)))  ~?=
+      [
+        Casillero infinitoNegativo (-29.510986) 509 2.545,
+        Casillero (-29.510986) 121.728485 2761 13.805,
+        Casillero 121.728485 272.96796 6769 33.845,
+        Casillero 272.96796 424.20743 6676 33.38,
+        Casillero 424.20743 575.4469 2771 13.855,
+        Casillero 575.4469 infinitoPositivo 514 2.57
+      ],
+    casilleros (fst (armarHistograma 6 20000 (eval (Mult (Rango (-25) (-10)) (Const 4))) (genNormalConSemilla 33)))  ~?=
+      [
+        Casillero infinitoNegativo (-99.798134) 499 2.495,
+        Casillero (-99.798134) (-89.80865) 1405 7.025,
+        Casillero (-89.80865) (-79.81917) 3220 16.1,
+        Casillero (-79.81917) (-69.82968) 4895 24.475,
+        Casillero (-69.82968) (-59.8402) 4835 24.175,
+        Casillero (-59.8402) (-49.850716) 3208 16.04,
+        Casillero (-49.850716) (-39.86123) 1424 7.12,
+        Casillero (-39.86123) infinitoPositivo 514 2.57
+      ],
+    casilleros (fst (armarHistograma 3 20 (eval (Div (Rango 8 1000) (Const 2))) (genNormalConSemilla 1)))  ~?=
+      [
+        Casillero infinitoNegativo (-7.452301) 0 0.0,
+        Casillero (-7.452301) 174.70993 4 20.0,
+        Casillero 174.70993 356.87216 10 50.0,
+        Casillero 356.87216 539.0344 6 30.0,
+        Casillero 539.0344 infinitoPositivo 0 0.0
+      ],
+    casilleros (fst (armarHistograma 4 5000 (eval (Resta (Div (Suma (Mult (Rango 10 20) (Rango 2 3)) (Rango 100 200)) (Rango 5 10)) (Const 2))) (genNormalConSemilla 55)))  ~?=
+      [
+        Casillero infinitoNegativo 11.721495 21 0.42,
+        Casillero 11.721495 17.766083 706 14.12,
+        Casillero 17.766083 23.810673 2026 40.52,
+        Casillero 23.810673 29.85526 1528 30.56,
+        Casillero 29.85526 35.89985 526 10.52,
+        Casillero 35.89985 infinitoPositivo 193 3.86
+      ] --la operacion hecha: (((10 ~ 20) * (2 ~ 3)) + (100 ~ 200)) / (5 ~ 10) - 2 
+    ]
 
 testsEvalHistograma :: Test
 testsEvalHistograma =

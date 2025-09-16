@@ -22,8 +22,8 @@ data Expr
   | Div Expr Expr
   deriving (Show, Eq)
 
-recrExpr :: (Float->a) -> (Float->Float->a)-> (Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a) ->Expr->a
-recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of
+recrExpr :: (Float->a) -> (Float->Float->a)-> (Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a) ->Expr->a    -- funciona igual que un recr pero con constructores 
+recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of                                                                                            -- me fjo en que constructor utiliza y le aplico la funcion
       Const a -> fConst a
       Rango a b -> fRango a b
       Suma x y-> fSuma x y (rec x) (rec y)
@@ -33,8 +33,8 @@ recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of
       where rec= recrExpr fConst fRango fSuma fResta fMult fDiv 
 
 
-foldExpr :: (Float->a) -> (Float->Float->a)-> (a->a->a)->(a->a->a)->(a->a->a)->(a->a->a) ->Expr->a
-foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of
+foldExpr :: (Float->a) -> (Float->Float->a)-> (a->a->a)->(a->a->a)->(a->a->a)->(a->a->a) ->Expr->a    -- funciona igual que un recr pero con constructores 
+foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of                                          -- me fjo en que constructor utiliza y le aplico la funcion
       Const a -> fConst a
       Rango a b -> fRango a b
       Suma x y-> fSuma (rec x) (rec y)
@@ -47,12 +47,24 @@ foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of
 eval :: Expr -> G Float
 eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
   where 
-    fCons x      = \g -> (x, g)
-    fRango x y   = \g -> dameUno (x, y) g
-    fSuma f1 f2  = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 + x2, g3)) (f2 g2)) (f1 g1)
-    fResta f1 f2 = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 - x2, g3)) (f2 g2)) (f1 g1)
-    fMult f1 f2  = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 * x2, g3)) (f2 g2)) (f1 g1)
-    fDiv f1 f2   = \g1 -> (\(x1, g2) -> (\(x2, g3) -> (x1 / x2, g3)) (f2 g2)) (f1 g1)
+    fCons x g = (x, g)
+    fRango x y g = dameUno (x, y) g
+    fSuma f1 f2 g1 = (sumando1 + sumando2, g3)
+      where
+        (sumando1, g2) = f1 g1
+        (sumando2, g3) = f2 g2
+    fResta f1 f2 g1 = (minuendo - sustraendo, g3)
+      where
+        (minuendo, g2) = f1 g1
+        (sustraendo, g3) = f2 g2
+    fMult f1 f2 g1 = (factor1 * factor2, g3)
+      where
+        (factor1, g2) = f1 g1
+        (factor2, g3) = f2 g2
+    fDiv f1 f2 g1 = (dividendo / divisor, g3)
+      where
+        (dividendo, g2) = f1 g1
+        (divisor, g3) = f2 g2
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
@@ -78,27 +90,27 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar t = recrExpr fCons fRango fSuma fResta fMult fDiv t 
-      where fCons x= show x
-            fRango x y =   show x ++"~"++ show y
-            fSuma x y fx fy=  maybeParen  (perentesisSuma(x)) fx ++ " + " ++ maybeParen  ( perentesisSuma(y)) fy
-            fResta x y fx fy = maybeParen (noEsConst(x)) fx ++ " - "  ++ maybeParen (noEsConst(y)) fy
-            fMult x y fx fy= maybeParen (parentesisMult(x)) fx ++ " * " ++ maybeParen ( parentesisMult(y)) fy
-            fDiv x y fx fy = maybeParen (noEsConst(x)) fx ++ " / " ++ maybeParen (noEsConst(y)) fy
+mostrar t = recrExpr fCons fRango fSuma fResta fMult fDiv t -- utiliza recrExpr para recorrer la Expr 
+      where fCons x= show x     -- devuelve el valor de x en un string
+            fRango x y =   show x ++"~"++ show y        -- devuelve el rango  
+            fSuma x y fx fy=  maybeParen  (parentesisSuma(x)) fx ++ " + " ++ maybeParen  ( parentesisSuma(y)) fy --si parentesisSuma==True, entonces lleva parentesis la Expr
+            fResta x y fx fy = maybeParen (noEsConst(x)) fx ++ " - "  ++ maybeParen (noEsConst(y)) fy   --lleva parentesis la Expr excepto en el caso de que sea una Const
+            fMult x y fx fy= maybeParen (parentesisMult(x)) fx ++ " * " ++ maybeParen ( parentesisMult(y)) fy   --parentesisMult==True, entonces lleva parentesis la Expr
+            fDiv x y fx fy = maybeParen (noEsConst(x)) fx ++ " / " ++ maybeParen (noEsConst(y)) fy      --lleva parentesis la Expr excepto en el caso de que sea una Const
 
-perentesisSuma:: Expr->Bool
-perentesisSuma (Suma _ _)=False
-perentesisSuma (Const _)= False
-perentesisSuma (Rango _ _)= False
-perentesisSuma _ =True
+parentesisSuma:: Expr->Bool   -- se fija para que casos debe llevar parentesis en el caso de una Suma
+parentesisSuma (Suma _ _)=False
+parentesisSuma (Const _)= False
+parentesisSuma (Rango _ _)= False
+parentesisSuma _ =True
 
-parentesisMult:: Expr-> Bool
+parentesisMult:: Expr-> Bool    -- se fija para que casos debe llevar parentesis en el caso de la Mult
 parentesisMult (Mult _ _)= False
 parentesisMult (Const _)= False
 parentesisMult (Rango _ _)= False
 parentesisMult _ =True
 
-noEsConst:: Expr -> Bool
+noEsConst:: Expr -> Bool    -- se fija si es Const o no 
 noEsConst (Const _)= False
 noEsConst _ = True
 
