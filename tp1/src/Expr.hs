@@ -47,21 +47,21 @@ foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of                    
 eval :: Expr -> G Float
 eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
   where 
-    fCons x g = (x, g)
-    fRango x y g = dameUno (x, y) g
-    fSuma f1 f2 g1 = (sumando1 + sumando2, g3)
-      where
-        (sumando1, g2) = f1 g1
-        (sumando2, g3) = f2 g2
-    fResta f1 f2 g1 = (minuendo - sustraendo, g3)
+    fCons x g       = (x, g)  -- me devuelve el mismo numero con su respectivo generador
+    fRango x y g    = dameUno (x, y) g  -- dameUno me devuelve un numero del rango "x, y" con un nuevo generador
+    fSuma f1 f2 g1  = (sumando1 + sumando2, g3) -- fSuma tomas dos funciones f1, f2 y un generador g1. La funcion f1 g1 
+      where                                     -- devuelve (sumando1,g2). Con este nuevo generador g2 calculo f2 g2
+        (sumando1, g2) = f1 g1                  -- y obtengo (sumando2,g3). Por ultimo, devuelvo la suma de ambos
+        (sumando2, g3) = f2 g2                  -- sumandos junto con el ultimo generador que es g3.
+    fResta f1 f2 g1 = (minuendo - sustraendo, g3) -- fResta es analogo a fSuma, solo que resto los resultados.
       where
         (minuendo, g2) = f1 g1
         (sustraendo, g3) = f2 g2
-    fMult f1 f2 g1 = (factor1 * factor2, g3)
+    fMult f1 f2 g1 = (factor1 * factor2, g3)  -- fMult es analogo a fSuma, solo que multiplico los resultados.
       where
         (factor1, g2) = f1 g1
         (factor2, g3) = f2 g2
-    fDiv f1 f2 g1 = (dividendo / divisor, g3)
+    fDiv f1 f2 g1 = (dividendo / divisor, g3) -- fDiv es analogo a fSuma, solo que divido los resultados.
       where
         (dividendo, g2) = f1 g1
         (divisor, g3) = f2 g2
@@ -69,16 +69,18 @@ eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f g = (histograma m r xs, gen)
-  where 
-    (xs, gen) = muestra f n g
-    r = rango95 xs
+armarHistograma m n f g = (histograma m r xs, gen) -- armo el histograma de m casilleros, rango r y de una lista de 
+  where                                            -- numeros reales xs
+    (xs, gen) = muestra f n g  -- genero una muestra de f aplicada n veces, devuelvo sus resultados en xs y el generador
+    r = rango95 xs             -- resultante gen. Con rango95 calculo el rango r de nuestro Histograma
 
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
 -- @n@ debe ser mayor que 0.
 evalHistograma :: Int -> Int -> Expr -> G Histograma
 evalHistograma m n expr = armarHistograma m n (eval expr)
+-- armo un histograma de m casilleros, el cual contiene una muestra de (eval expr) aplicada n veces, con su
+-- correspondiente gen resultante.
 
 -- Podemos armar histogramas que muestren las n evaluaciones en m casilleros.
 -- >>> evalHistograma 11 10 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)
