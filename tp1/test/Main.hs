@@ -297,7 +297,17 @@ testsEvalHistograma =
             Casillero 5.7 6.1 0 0.0,
             Casillero 6.1 6.5 0 0.0,
             Casillero 6.5 infinitoPositivo 0 0.0
-        ]
+        ],
+        casilleros (fst (evalHistograma 5 3 (Rango 1 10) (genNormalConSemilla 0)  )) ~?=
+        [
+            Casillero infinitoNegativo 2.0547414 0 0.0,
+            Casillero 2.0547414 4.1489725 0 0.0,
+            Casillero 4.1489725 6.243204 2 66.666664,
+            Casillero 6.243204 8.337435 0 0.0,
+            Casillero 8.337435 10.431667 0 0.0,
+            Casillero 10.431667 12.525898 1 33.333332,
+            Casillero 12.525898 infinitoPositivo 0 0.0
+          ]
     ]
 
 testsParse :: Test
