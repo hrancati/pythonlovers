@@ -5,12 +5,8 @@ module Util where
 -- alinearDerecha :: Int -> String -> String
 
 alinearDerecha :: Int -> String -> String
-alinearDerecha n s = espacios ++ s
-     where
-        m = n-(length s)        -- calculamos cuantos caracteres nos hacen falta
-        t = [ x | x <- [1..m] ] -- generamos una lista por compresion de esos caracteres a foldear
-        f x res = " " ++ res    -- lambda para el fold, simplemente concatena los espacios
-        espacios = foldr f "" t -- generamos los espacios concatenando la lista por compresion
+alinearDerecha n s | length s >= n = s    
+			    | otherwise     = [' '| _ <- [1..(n - length s)]] ++ s 
 
 -- | Dado un índice y una función, actualiza el elemento en la posición del índice
 -- aplicando la función al valor actual. Si el índice está fuera de los límites
