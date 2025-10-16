@@ -79,24 +79,11 @@ casPorcentaje (Casillero _ _ _ p) = p
 
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
 casilleros :: Histograma -> [Casillero]
-casilleros h = zipWith4 Casillero (listaMinimo h) (listaMaximo h) ( listaCantidad h) (listaPorcentaje h) -- aplica el zipWith4 para las cuatro listas que arme antes
-
-
-listaMinimo :: Histograma -> [Float]      -- devuelve una lista de el inicio de los intervalos
-listaMinimo (Histograma i t xs) = [if j== 0 then infinitoNegativo else i + fromIntegral(j-1) * t| j<- [0 .. n - 1]]
-  where n =  length xs
-
-
-listaMaximo :: Histograma -> [Float]      -- devuelve una lista el final de los intervalos
-listaMaximo (Histograma i t xs) = [if j==n-1 then infinitoPositivo else i + fromIntegral(j) *t | j<- [0 .. n - 1]]
-  where n =  length xs
-
-
-listaCantidad :: Histograma -> [Int]    -- devuelve una lista de la cantidad de elementos en cada intervalo
-listaCantidad (Histograma i t xs) = xs
-
-listaPorcentaje :: Histograma -> [Float]    -- devuelve una lista de los porcentajes de elementos en cada intervalo
-listaPorcentaje (Histograma i t xs) = if sumatoria == 0 then replicate n 0  else map (\c -> 100 * fromIntegral c / fromIntegral sumatoria) xs
+casilleros (Histograma i t xs) = zipWith4 Casillero listaMinimo listaMaximo  xs  listaPorcentaje
   where 
-  sumatoria= sum xs
-  n= length xs
+    intervalo   = [i + (fromIntegral j)*t | j <- [0..(length xs - 2)]]
+    listaMinimo = [infinitoNegativo] ++ intervalo
+    listaMaximo = intervalo ++ [infinitoPositivo]
+    listaPorcentaje = if sumatoria == 0 then replicate n 0  else map (\c -> 100*fromIntegral c / fromIntegral sumatoria) xs
+    sumatoria = sum xs
+    n =  length xs
