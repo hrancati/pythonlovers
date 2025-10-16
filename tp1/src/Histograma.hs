@@ -54,9 +54,7 @@ calcularPosicion y i t n
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
-histograma n r xs= foldr agregar histogramaVacio xs     --- recorre xs aplicando agregar a cada elemento
-  where
-    histogramaVacio= vacio n r      -- crea un histograma vacio
+histograma n r = foldr agregar (vacio n r)
 
 -- | Un `Casillero` representa un casillero del histograma con sus límites, cantidad y porcentaje.
 -- Invariante: Sea @Casillero m1 m2 c p@ entonces @m1 < m2@, @c >= 0@, @0 <= p <= 100@
