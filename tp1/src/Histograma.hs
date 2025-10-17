@@ -43,13 +43,10 @@ agregar y (Histograma i t xs)= Histograma i t (actualizarElem k (+1) xs ) -- mod
   where 
     k= calcularPosicion y i t (length xs) 
 
-calcularPosicion:: Float ->Float -> Float-> Int-> Int   --elige la posicion donde va a caer el valor a apregar
-calcularPosicion y i t n 
-              |n <=0  =0        -- si n <=0, significa que la lista esta vacia 
-              |y <i = 0         -- si y<i significa que esta en el rango -infinito a i
-              |y >= i + t* fromIntegral (n-2) = n-1         -- en este caso nos dice que esta en el rango que va a +infinito
-              | otherwise = 1+ floor ((y-i)/t)              -- si no es ninguno de esos calcula la posicion donde tiene que modificar
-
+calcularPosicion:: Float -> Float -> Float -> Int -> Int   
+calcularPosicion y i t n | y == infinitoNegativo = 0
+                         | y == infinitoPositivo = n-1
+                         | otherwise             = min (n-1) (max 0 (1 + floor ((y-i)/t))) 
 
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
