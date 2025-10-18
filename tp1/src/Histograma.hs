@@ -41,12 +41,12 @@ vacio n (l, u) = Histograma l tamanioIntervalo (replicate (n + 2) 0)
 agregar :: Float -> Histograma -> Histograma
 agregar y (Histograma i t xs)= Histograma i t (actualizarElem k (+1) xs ) -- modifica la lista del Histograma y suma 1 a la posicion ya calculada
   where 
-    k= calcularPosicion y i t (length xs) 
-
-calcularPosicion:: Float -> Float -> Float -> Int -> Int   
-calcularPosicion y i t n | y == infinitoNegativo = 0
-                         | y == infinitoPositivo = n-1
-                         | otherwise             = min (n-1) (max 0 (1 + floor ((y-i)/t))) 
+    k= calcularPosicion y i t (length xs)
+    
+calcularPosicion:: Float -> Float -> Float-> Int-> Int   
+calcularPosicion y i t n | y < i                         = 0         
+                         | y >= i + t*fromIntegral (n-2) = n - 1                 
+                         | otherwise                     = 1 + floor ((y-i)/t)  
 
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
