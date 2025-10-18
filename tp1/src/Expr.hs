@@ -88,29 +88,42 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar t = recrExpr fCons fRango fSuma fResta fMult fDiv t -- utiliza recrExpr para recorrer la Expr 
-      where fCons x= show x     -- devuelve el valor de x en un string
-            fRango x y =   show x ++"~"++ show y        -- devuelve el rango  
-            fSuma x y fx fy=  maybeParen  (parentesisSuma(x)) fx ++ " + " ++ maybeParen  ( parentesisSuma(y)) fy --si parentesisSuma==True, entonces lleva parentesis la Expr
-            fResta x y fx fy = maybeParen (noEsConst(x)) fx ++ " - "  ++ maybeParen (noEsConst(y)) fy   --lleva parentesis la Expr excepto en el caso de que sea una Const
-            fMult x y fx fy= maybeParen (parentesisMult(x)) fx ++ " * " ++ maybeParen ( parentesisMult(y)) fy   --parentesisMult==True, entonces lleva parentesis la Expr
-            fDiv x y fx fy = maybeParen (noEsConst(x)) fx ++ " / " ++ maybeParen (noEsConst(y)) fy      --lleva parentesis la Expr excepto en el caso de que sea una Const
+mostrar t = recrExpr fCons fRango fSuma fResta fMult fDiv t
+  where 
+    fCons x              = show x     
+    fRango x y           = show x ++ "~" ++ show y         
+    fSuma x y str1 str2  = mostrarSegunOperacion " + " x y str1 str2 
+    fResta x y str1 str2 = mostrarSegunOperacion " - " x y str1 str2    
+    fMult x y str1 str2  = mostrarSegunOperacion " * " x y str1 str2    
+    fDiv x y str1 str2   = mostrarSegunOperacion " / " x y str1 str2       
 
-parentesisSuma:: Expr->Bool   -- se fija para que casos debe llevar parentesis en el caso de una Suma
+-- | Muestra las expresiones evitando algunos paréntesis innecesarios. Recibe como argumentos el string operacion
+-- (" + " , " - " ," * " ," / "), 2 expresiones y 2 string.
+mostrarSegunOperacion :: String -> Expr -> Expr -> String -> String -> String
+mostrarSegunOperacion str x y str1 str2 = maybeParen (parentesis str x) str1 ++ str ++ maybeParen (parentesis str y) str2
+  where
+    parentesis str expr | str == " + "                  = parentesisSuma expr
+                        | str == " - "  || str == " / " = parentesisRestaYDiv expr
+                        | str == " * "                  = parentesisMult expr
+
+-- Se fija para que casos debe llevar parentesis en el caso de una Suma
+parentesisSuma:: Expr->Bool
 parentesisSuma (Suma _ _)=False
 parentesisSuma (Const _)= False
 parentesisSuma (Rango _ _)= False
 parentesisSuma _ =True
 
-parentesisMult:: Expr-> Bool    -- se fija para que casos debe llevar parentesis en el caso de la Mult
+-- Se fija para que casos debe llevar parentesis en el caso de la Mult
+parentesisMult:: Expr-> Bool   
 parentesisMult (Mult _ _)= False
 parentesisMult (Const _)= False
 parentesisMult (Rango _ _)= False
 parentesisMult _ =True
 
-noEsConst:: Expr -> Bool    -- se fija si es Const o no 
-noEsConst (Const _)= False
-noEsConst _ = True
+-- Se fija para que casos debe llevar parentesis en el caso de la Rest o Div
+parentesisRestaYDiv :: Expr -> Bool     
+parentesisRestaYDiv (Const _) = False
+parentesisRestaYDiv _ = True
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
