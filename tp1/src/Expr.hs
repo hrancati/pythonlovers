@@ -44,27 +44,23 @@ foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of                    
       where rec= foldExpr fConst fRango fSuma fResta fMult fDiv
 
 -- | Evaluar expresiones dado un generador de números aleatorios
+-- | Evalúa expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
-eval expr = foldExpr fCons fRango fSuma fResta fMult fDiv expr
+eval expr gen = foldExpr fConst fRango fSuma fResta fMult fDiv expr gen
   where 
-    fCons x g       = (x, g)  -- me devuelve el mismo numero con su respectivo generador
-    fRango x y g    = dameUno (x, y) g  -- dameUno me devuelve un numero del rango "x, y" con un nuevo generador
-    fSuma f1 f2 g1  = (sumando1 + sumando2, g3) -- fSuma tomas dos funciones f1, f2 y un generador g1. La funcion f1 g1 
-      where                                     -- devuelve (sumando1,g2). Con este nuevo generador g2 calculo f2 g2
-        (sumando1, g2) = f1 g1                  -- y obtengo (sumando2,g3). Por ultimo, devuelvo la suma de ambos
-        (sumando2, g3) = f2 g2                  -- sumandos junto con el ultimo generador que es g3.
-    fResta f1 f2 g1 = (minuendo - sustraendo, g3) -- fResta es analogo a fSuma, solo que resto los resultados.
-      where
-        (minuendo, g2) = f1 g1
-        (sustraendo, g3) = f2 g2
-    fMult f1 f2 g1 = (factor1 * factor2, g3)  -- fMult es analogo a fSuma, solo que multiplico los resultados.
-      where
-        (factor1, g2) = f1 g1
-        (factor2, g3) = f2 g2
-    fDiv f1 f2 g1 = (dividendo / divisor, g3) -- fDiv es analogo a fSuma, solo que divido los resultados.
-      where
-        (dividendo, g2) = f1 g1
-        (divisor, g3) = f2 g2
+    fConst x     = \g -> (x, g)
+    fRango x y   = \g -> dameUno (x, y) g
+    fSuma f1 f2  = \g -> operador (+) f1 f2 g
+    fResta f1 f2 = \g -> operador (-) f1 f2 g
+    fMult f1 f2  = \g -> operador (*) f1 f2 g
+    fDiv f1 f2   = \g -> operador (/) f1 f2 g 
+
+-- | Evalúa expresiones con la ayuda de una función operador aritmético (+, -, /, *)
+operador ::  (Float -> Float -> Float) -> G Float -> G Float -> G Float
+operador funcionOperador f1 f2 g =  (funcionOperador a b, g2)
+  where
+    (a, g1) = f1 g
+    (b, g2) = f2 g1
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
