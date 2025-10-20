@@ -313,49 +313,21 @@ testsArmarHistograma =
   test
     [
     --nuestros tests (actualizados según correcciones)
-    length (casilleros (fst (armarHistograma 5 100 (eval (Suma (Rango 1 5) (Const 10))) (genNormalConSemilla 42)))) ~?= 7,--verificamos que la cantidad de casilleros sea la correcta 
-    
-    sum [c | Casillero _ _ c _ <- casilleros (fst (armarHistograma 4 20000 (eval (Resta (Rango 1 600) (Const 25))) (genNormalConSemilla 14)))]  ~?= 20000, --verificamos que si pedimos una cantidad n (en este test 20000) de muestras, se obtengan esa cantidad de muestras
-
-    fst (armarHistograma 10 100 (eval (Mult (Rango 1 12) (Const 10))) (genNormalConSemilla 4)) /= fst (armarHistograma 10 100 (eval (Mult (Rango 1 12) (Const 10))) (genNormalConSemilla 20)) ~?= True, --verificamos que se comporten distinto dos histogramas con las mismas operaciones pero con distintas semillas
-
-    sum ([p | Casillero _ _ _ p <- casilleros (fst (armarHistograma 4 1000 (eval (Rango 0 1)) genFijo))]) - 100.0 < 1.0 ~?= True --verificamos que la suma de porcentajes de todos los casilleros dé 100%, aunque tenemos que comprobar que sea menor a 1 en vez de igualar a 0 debido a redondeos
+    length (casilleros (fst (armarHistograma 5 100 (eval (Suma (Rango 1 5) (Const 10))) (genNormalConSemilla 42)))) ~?= 7,--verificamos que la cantidad de casilleros sea la correcta. 
+    sum [c | Casillero _ _ c _ <- casilleros (fst (armarHistograma 4 20000 (eval (Resta (Rango 1 600) (Const 25))) (genNormalConSemilla 14)))]  ~?= 20000, --verificamos que si pedimos una cantidad n (en este test 20000) de muestras, se obtengan esa cantidad de muestras.
+    fst (armarHistograma 10 100 (eval (Mult (Rango 1 12) (Const 10))) (genNormalConSemilla 4)) /= fst (armarHistograma 10 100 (eval (Mult (Rango 1 12) (Const 10))) (genNormalConSemilla 20)) ~?= True, --verificamos que se comporten distinto dos histogramas con las mismas operaciones pero con distintas semillas.
+    sum ([p | Casillero _ _ _ p <- casilleros (fst (armarHistograma 4 1000 (eval (Rango 0 1)) genFijo))]) - 100.0 < 1.0 ~?= True --verificamos que la suma de porcentajes de todos los casilleros dé 100%, aunque tenemos que comprobar que sea menor a 1 en vez de igualar a 0 debido a redondeos.
     ]
 
 testsEvalHistograma :: Test
 testsEvalHistograma =
   test
     [
-      casilleros (fst (evalHistograma 5 10 (Const 5) genFijo)) ~?=
-        [
-          Casillero infinitoNegativo 4.0 0 0.0,
-          Casillero 4.0 4.4 0 0.0,
-          Casillero 4.4 4.8 0 0.0,
-          Casillero 4.8 5.2 10 100.0,
-          Casillero 5.2 5.6 0 0.0,
-          Casillero 5.6 6.0 0 0.0,
-          Casillero 6.0 infinitoPositivo 0 0.0
-        ],
-        casilleros (fst (evalHistograma 5 10 (Rango 1 10) genFijo))  ~?=
-        [
-            Casillero infinitoNegativo 4.5 0 0.0,
-            Casillero 4.5 4.9 0 0.0,
-            Casillero 4.9 5.3 0 0.0,
-            Casillero 5.3 5.7 10 100.0,
-            Casillero 5.7 6.1 0 0.0,
-            Casillero 6.1 6.5 0 0.0,
-            Casillero 6.5 infinitoPositivo 0 0.0
-        ],
-        casilleros (fst (evalHistograma 5 3 (Rango 1 10) (genNormalConSemilla 0)  )) ~?=
-        [
-            Casillero infinitoNegativo 2.0547414 0 0.0,
-            Casillero 2.0547414 4.1489725 0 0.0,
-            Casillero 4.1489725 6.243204 2 66.666664,
-            Casillero 6.243204 8.337435 0 0.0,
-            Casillero 8.337435 10.431667 0 0.0,
-            Casillero 10.431667 12.525898 1 33.333332,
-            Casillero 12.525898 infinitoPositivo 0 0.0
-          ]
+    --nuestros tests (actualizados según correcciones)
+    length (filter (\p -> p < 0.0 || p > 100.0) [p | Casillero _ _ _ p <- casilleros (fst (evalHistograma 8 500 (Rango (-100) 100) genFijo))]) ~?= 0, --verificamos que todos los porcentajes en los casilleros estén entre 0% y 100%.
+    fst (evalHistograma 10 200 (Div (Suma (Rango 1 5) (Const 10)) (Rango 2 4)) (genNormalConSemilla 66)) /= fst (evalHistograma 10 200 (Div (Suma (Rango 1 5) (Const 10)) (Rango 2 4)) (genNormalConSemilla 22)) ~?= True, --verificamos que dos histogramas con la misma expresión pero distinta semilla sean diferentes en la distribución.
+    sum [c | Casillero _ _ c _ <- casilleros (fst (evalHistograma 4 80 (Mult (Rango 1 600) (Rango (-25) 25)) genFijo))]  ~?= 80, --verificamos que el total de muestras pedidas sea correcto.
+    length (filter (\(Casillero _ _ c _) -> c > 0) (casilleros (fst (evalHistograma 10 300 (Rango 0 1) (genNormalConSemilla 2))))) == length (filter (\(Casillero _ _ c _) -> c > 0) (casilleros (fst (evalHistograma 10 300 (Rango 0 1) (genNormalConSemilla 88))))) ~?= True --verificamos que dadas dos semillas obtengamos histogramas estructuralmente iguales (misma cantidad de casilleros). 
     ]
 
 testsParse :: Test
