@@ -23,7 +23,7 @@ data Expr
   deriving (Show, Eq)
 
 recrExpr :: (Float->a) -> (Float->Float->a)-> (Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a)->(Expr->Expr->a->a->a) ->Expr->a    -- funciona igual que un recr pero con constructores 
-recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of                                                                                            -- me fjo en que constructor utiliza y le aplico la funcion
+recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of -- nos fjamos qué constructor utiliza y le aplicamos la función
       Const a -> fConst a
       Rango a b -> fRango a b
       Suma x y-> fSuma x y (rec x) (rec y)
@@ -34,14 +34,14 @@ recrExpr fConst fRango fSuma fResta fMult fDiv t = case t of                    
 
 
 foldExpr :: (Float->a) -> (Float->Float->a)-> (a->a->a)->(a->a->a)->(a->a->a)->(a->a->a) ->Expr->a    -- funciona igual que un recr pero con constructores 
-foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of                                          -- me fjo en que constructor utiliza y le aplico la funcion
+foldExpr fConst fRango fSuma fResta fMult fDiv t = case t of                                          -- nos fjamos qué constructor se utiliza y aplicamos la funcion
       Const a -> fConst a
       Rango a b -> fRango a b
       Suma x y-> fSuma (rec x) (rec y)
       Resta x y -> fResta (rec x) (rec y)
       Mult x y -> fMult (rec x) (rec y)
       Div x y -> fDiv (rec x) (rec y)
-      where rec= foldExpr fConst fRango fSuma fResta fMult fDiv
+      where rec = foldExpr fConst fRango fSuma fResta fMult fDiv
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 -- | Evalúa expresiones dado un generador de números aleatorios
@@ -65,18 +65,16 @@ operador funcionOperador f1 f2 g =  (funcionOperador a b, g2)
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f g = (histograma m r xs, gen) -- armo el histograma de m casilleros, rango r y de una lista de 
+armarHistograma m n f g = (histograma m r xs, gen)
   where                                            -- numeros reales xs
-    (xs, gen) = muestra f n g  -- genero una muestra de f aplicada n veces, devuelvo sus resultados en xs y el generador
-    r = rango95 xs             -- resultante gen. Con rango95 calculo el rango r de nuestro Histograma
+    (xs, gen) = muestra f n g  -- genera una muestra de f aplicada n veces, devolvemos sus resultados en xs y el generador resultante gen. 
+    r = rango95 xs             --Con rango95 calculamos el rango r de nuestro Histograma
 
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
 -- @n@ debe ser mayor que 0.
 evalHistograma :: Int -> Int -> Expr -> G Histograma
-evalHistograma m n expr = armarHistograma m n (eval expr)
--- armo un histograma de m casilleros, el cual contiene una muestra de (eval expr) aplicada n veces, con su
--- correspondiente gen resultante.
+evalHistograma m n expr = armarHistograma m n (eval expr) 
 
 -- Podemos armar histogramas que muestren las n evaluaciones en m casilleros.
 -- >>> evalHistograma 11 10 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)
@@ -106,21 +104,21 @@ mostrarSegunOperacion str x y str1 str2 = maybeParen (parentesis str x) str1 ++ 
                         | str == " - "  || str == " / " = parentesisRestaYDiv expr
                         | str == " * "                  = parentesisMult expr
 
--- Se fija para que casos debe llevar parentesis en el caso de una Suma
+-- Se fija para qué casos debe llevar paréntesis en el caso de una Suma
 parentesisSuma:: Expr->Bool
-parentesisSuma (Suma _ _)=False
-parentesisSuma (Const _)= False
-parentesisSuma (Rango _ _)= False
-parentesisSuma _ =True
+parentesisSuma (Suma _ _) = False
+parentesisSuma (Const _) = False
+parentesisSuma (Rango _ _) = False
+parentesisSuma _ = True
 
--- Se fija para que casos debe llevar parentesis en el caso de la Mult
+-- Se fija para qué casos debe llevar paréntesis en el caso de la Mult
 parentesisMult:: Expr-> Bool   
-parentesisMult (Mult _ _)= False
-parentesisMult (Const _)= False
-parentesisMult (Rango _ _)= False
-parentesisMult _ =True
+parentesisMult (Mult _ _) = False
+parentesisMult (Const _) = False
+parentesisMult (Rango _ _) = False
+parentesisMult _ = True
 
--- Se fija para que casos debe llevar parentesis en el caso de la Rest o Div
+-- Se fija para qué casos debe llevar paréntesis en el caso de la Rest o Div
 parentesisRestaYDiv :: Expr -> Bool     
 parentesisRestaYDiv (Const _) = False
 parentesisRestaYDiv _ = True

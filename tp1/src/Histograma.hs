@@ -39,11 +39,11 @@ vacio n (l, u) = Histograma l tamanioIntervalo (replicate (n + 2) 0)
 
 -- | Agrega un valor al histograma.
 agregar :: Float -> Histograma -> Histograma
-agregar y (Histograma i t xs)= Histograma i t (actualizarElem k (+1) xs ) -- modifica la lista del Histograma y suma 1 a la posicion ya calculada
+agregar y (Histograma i t xs)= Histograma i t (actualizarElem k (+1) xs ) -- modifica la lista del Histograma y suma 1 a la posición ya calculada
   where 
-    k= calcularPosicion y i t (length xs)
+    k = calcularPosicion y i t (length xs)
     
-calcularPosicion:: Float -> Float -> Float-> Int-> Int   
+calcularPosicion:: Float -> Float -> Float -> Int -> Int   
 calcularPosicion y i t n | y < i                         = 0         
                          | y >= i + t*fromIntegral (n-2) = n - 1                 
                          | otherwise                     = 1 + floor ((y-i)/t)  

@@ -6,7 +6,7 @@ module Util where
 
 alinearDerecha :: Int -> String -> String
 alinearDerecha n s | length s >= n = s    
-			    | otherwise     = [' '| _ <- [1..(n - length s)]] ++ s 
+    | otherwise     = replicate (n - length s) ' ' ++ s
 
 -- | Dado un índice y una función, actualiza el elemento en la posición del índice
 -- aplicando la función al valor actual. Si el índice está fuera de los límites
@@ -14,7 +14,7 @@ alinearDerecha n s | length s >= n = s
 -- El primer elemento de la lista es el índice 0.
 
 actualizarElem :: Int -> (a -> a) -> [a] -> [a]
-actualizarElem n f xs =  zipWith (actualizador f n) xs [0..]     -- armamos una lista de pares con (valor,indice)
+actualizarElem n f xs =  zipWith (actualizador f n) xs [0..]     -- armamos una lista de pares con (valor,índice)
     where actualizador f n v i = if (i == n) then (f v) else v
 
 -- | infinito positivo (Haskell no tiene literal para +infinito)
